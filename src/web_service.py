@@ -19,7 +19,7 @@ def _draw_status_marker(frame, bbox, status):
         return
 
     height, width = frame.shape[:2]
-    x1, y1, x2, _ = map(int, bbox)
+    x1, y1, x2, y2 = map(int, bbox)
     center = (
         min(max(x2 - 14, 16), width - 16),
         min(max(y1 + 14, 16), height - 16),
@@ -46,6 +46,38 @@ def _draw_status_marker(frame, bbox, status):
             (center[0] + marker_size, center[1] - marker_size),
             color,
             thickness,
+            cv2.LINE_AA,
+        )
+        bbox_width = max(1, x2 - x1)
+        font_scale = min(3.0, max(0.7, (bbox_width - 16) / 48))
+        font_thickness = max(2, int(font_scale * 3))
+        (text_width, text_height), baseline = cv2.getTextSize(
+            "NO",
+            cv2.FONT_HERSHEY_SIMPLEX,
+            font_scale,
+            font_thickness,
+        )
+        text_x = min(max(0, x1 + 8), max(0, width - text_width - 2))
+        text_y = min(max(text_height + 2, y2 - 12), height - baseline - 2)
+        text_y = max(text_height + 2, text_y)
+        cv2.putText(
+            frame,
+            "NO",
+            (text_x, text_y),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            font_scale,
+            (255, 255, 255),
+            font_thickness + 4,
+            cv2.LINE_AA,
+        )
+        cv2.putText(
+            frame,
+            "NO",
+            (text_x, text_y),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            font_scale,
+            color,
+            font_thickness,
             cv2.LINE_AA,
         )
     else:

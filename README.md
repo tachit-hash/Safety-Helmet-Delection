@@ -14,7 +14,7 @@ An AI-powered real-time safety helmet detection system built using YOLOv8 and Op
 - Reports page with selectable date range, detection totals, daily trend, helmet compliance ratio, and a filtered CSV download.
 - Optional touch-free point control: point at a dashboard button for one second to activate it.
 - Hand tracking runs locally in the browser. The camera feed is not uploaded.
-- Helmet detection runs every 10 seconds while the camera preview remains live.
+- Helmet detection runs every 5 seconds while the camera preview remains live.
 - Dashboard status examples use the user-provided helmet and no-helmet images.
 - A popup appears when a person is newly detected during a scan.
 

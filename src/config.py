@@ -4,7 +4,7 @@ import cv2
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIDENCE_THRESHOLD = 0.5
 ALERT_FRAME_THRESHOLD = 15
-SCAN_INTERVAL_SECONDS = 10
+SCAN_INTERVAL_SECONDS = 5
 MODEL_PATH = os.path.join(ROOT_DIR, "models", "yolov8n.pt")
 
 COLOR_HELMET = (0, 255, 0)     

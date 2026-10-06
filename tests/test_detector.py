@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from unittest.mock import Mock, patch
 
+import cv2
 import numpy as np
 
 from src.config import MODEL_PATH
@@ -279,9 +280,9 @@ class TestHelmetDetection(unittest.TestCase):
         self.assertEqual(history_response.status_code, 200)
         self.assertIsInstance(history_response.get_json(), list)
 
-    def test_scan_interval_is_ten_seconds(self):
-        """The configured camera inference interval is ten seconds."""
-        self.assertEqual(SCAN_INTERVAL_SECONDS, 10)
+    def test_scan_interval_is_five_seconds(self):
+        """The configured camera inference interval is five seconds."""
+        self.assertEqual(SCAN_INTERVAL_SECONDS, 5)
 
     def test_scan_overlay_draws_user_requested_red_cross(self):
         """The no-helmet scan result displays a bold red cross."""
@@ -303,6 +304,24 @@ class TestHelmetDetection(unittest.TestCase):
         self.assertGreater(int(no_helmet_color[2]), int(no_helmet_color[1]))
         self.assertGreater(int(no_helmet_other_stroke[2]), int(no_helmet_other_stroke[1]))
         self.assertGreater(int(unknown_color[2]), int(unknown_color[1]))
+
+    def test_scan_overlay_displays_large_no_for_no_helmet(self):
+        frame = np.zeros((240, 320, 3), dtype=np.uint8)
+        original_put_text = cv2.putText
+
+        with patch(
+            "src.web_service.cv2.putText",
+            wraps=original_put_text,
+        ) as put_text:
+            _draw_status_marker(frame, [20, 20, 280, 220], "NO HELMET")
+
+        no_text_calls = [
+            call for call in put_text.call_args_list
+            if call.args[1] == "NO"
+        ]
+        self.assertEqual(len(no_text_calls), 2)
+        self.assertGreaterEqual(no_text_calls[0].args[4], 2.0)
+        self.assertGreater(no_text_calls[0].args[6], 4)
 
     def test_new_detection_event_is_exposed_for_dashboard_popup(self):
         """A newly scanned person produces a unique event for the live dashboard."""
