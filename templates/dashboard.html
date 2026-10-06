@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Safety Helmet Detection System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css', v=15) }}">
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="#dashboard" aria-label="Home">
+      <span class="brand-mark">H</span>
+      <span><strong>Helmet</strong><small>Detection AI</small></span>
+    </a>
+    <div class="menu-label">MAIN MENU</div>
+    <nav class="nav-list" aria-label="Main navigation">
+      <button class="nav-link active" data-view="dashboard"><span>▦</span> Dashboard</button>
+      <button class="nav-link" data-view="live"><span>◉</span> Live Camera</button>
+      <button class="nav-link" data-view="cameras"><span>▧</span> Cameras</button>
+      <button class="nav-link" data-view="videos"><span>▷</span> Videos</button>
+      <button class="nav-link" data-view="history"><span>◎</span> Detections <b class="nav-count" id="detection-count">0</b></button>
+      <button class="nav-link" data-view="reports"><span>▥</span> Reports</button>
+      <button class="nav-link" data-view="users"><span>♙</span> Users</button>
+      <button class="nav-link" data-view="settings"><span>☷</span> Settings</button>
+    </nav>
+    <div class="sidebar-bottom">
+      <span class="status-dot" id="sidebar-dot"></span>
+      <span><strong id="sidebar-status">Not Started</strong><small>System Status</small></span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-heading">
+        <h1 id="page-title">Dashboard</h1>
+        <p id="page-subtitle">Safety helmet detection system overview</p>
+      </div>
+      <div class="topbar-right">
+        <button class="button outline air-pointer-toggle" id="air-pointer-toggle" type="button" aria-pressed="false">Enable Point Control</button>
+        <div class="topbar-menu-wrap">
+          <button class="icon-button notification-button" id="notification-toggle" type="button" aria-label="Notifications" aria-expanded="false" aria-controls="notification-menu">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+            <i class="notification-dot" id="notification-dot"></i>
+          </button>
+          <div class="topbar-popover notification-menu hidden" id="notification-menu" role="region" aria-label="Recent notifications">
+            <div class="popover-heading"><strong>Recent Detections</strong><button class="text-button" type="button" data-go="history">View all</button></div>
+            <div id="notification-list"><p class="popover-empty">No detections yet</p></div>
+          </div>
+        </div>
+        <div class="topbar-menu-wrap">
+          <button class="profile-toggle" id="profile-toggle" type="button" aria-expanded="false" aria-controls="profile-menu">
+            <span class="profile-avatar">A</span><span class="profile-name">Admin</span><span class="profile-chevron">⌄</span>
+          </button>
+          <div class="topbar-popover profile-menu hidden" id="profile-menu" role="menu">
+            <div class="profile-menu-heading"><span class="profile-avatar">A</span><span><strong>Admin</strong><small>System Administrator</small></span></div>
+            <button type="button" role="menuitem" data-go="users">Users</button>
+            <button type="button" role="menuitem" data-go="settings">Settings</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div id="error-banner" class="notice error hidden"></div>
+    <div id="warning-banner" class="notice warning hidden"></div>
+
+    <section class="view active" id="view-dashboard">
+      <div class="welcome-row">
+        <div><h2>Welcome</h2><p>Monitor your scan status and safety results here.</p></div>
+        <div class="button-row">
+          <button class="button primary" id="main-start"><span>▶</span> Start Scan</button>
+          <button class="button danger hidden" id="main-stop"><span>■</span> Stop Scan</button>
+        </div>
+      </div>
+
+      <div class="metrics">
+        <article class="metric-card">
+          <div class="metric-top"><span>Total Detections</span><span class="metric-icon blue">♙</span></div>
+          <strong id="overview-total">0</strong><small>People detected in saved records</small>
+        </article>
+        <article class="metric-card">
+          <div class="metric-top"><span>Helmet</span><span class="metric-icon green">✓</span></div>
+          <strong id="overview-helmet">0</strong><small>From saved scan history</small>
+        </article>
+        <article class="metric-card">
+          <div class="metric-top"><span>No Helmet</span><span class="metric-icon red">!</span></div>
+          <strong id="overview-no-helmet">0</strong><small>From saved scan history</small>
+        </article>
+        <article class="metric-card">
+          <div class="metric-top"><span>Active Cameras</span><span class="metric-icon violet">◉</span></div>
+          <strong id="overview-cameras">0 / 1</strong><small>Default camera</small>
+        </article>
+      </div>
+
+      <div class="overview-grid">
+        <article class="panel chart-panel">
+          <div class="panel-heading">
+            <div><h3>Detection Overview</h3><p>Daily helmet and no-helmet detections</p></div>
+            <div class="chart-legend"><span><i class="legend-helmet"></i> Helmet</span><span><i class="legend-no-helmet"></i> No Helmet</span></div>
+          </div>
+          <svg id="overview-chart" class="overview-chart" viewBox="0 0 560 230" role="img" aria-label="Helmet and no-helmet detections over seven days"></svg>
+        </article>
+        <article class="panel recent-panel">
+          <div class="panel-heading">
+            <div><h3>Recent Detections</h3><p>Latest saved scan records</p></div>
+            <button class="text-button" data-go="history">View All →</button>
+          </div>
+          <div class="table-wrap">
+            <table class="overview-recent-table">
+              <thead><tr><th>Camera</th><th>Status</th><th>Time</th><th>Confidence</th><th>View</th></tr></thead>
+              <tbody id="recent-body"><tr><td colspan="5" class="empty-cell">No records yet</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+
+      <section class="examples-section" aria-labelledby="examples-title">
+        <div class="examples-heading">
+          <div><h3 id="examples-title">Status Examples</h3><p>Example images with current scan counts</p></div>
+        </div>
+        <div class="example-grid">
+          <article class="example-card">
+            <img src="{{ url_for('static', filename='images/helmet-example.png') }}" alt="Safety helmet example">
+            <div class="example-copy">
+              <span class="example-label helmet-label"><i>✓</i> Helmet</span>
+              <strong><span id="example-helmet-count">0</span> people</strong>
+              <small id="example-helmet-percent">0.0% of detected people</small>
+            </div>
+          </article>
+          <article class="example-card">
+            <img src="{{ url_for('static', filename='images/no-helmet-example.png') }}" alt="No-helmet example">
+            <div class="example-copy">
+              <span class="example-label no-helmet-label"><i>×</i> No Helmet</span>
+              <strong><span id="example-no-helmet-count">0</span> people</strong>
+              <small id="example-no-helmet-percent">0.0% of detected people</small>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <div class="content-grid live-only-grid">
+        <article class="panel live-panel">
+          <div class="panel-heading">
+            <div><h3>Live Camera</h3><p>Real-time camera preview</p></div>
+            <span class="live-badge" id="live-badge"><i></i> Offline</span>
+          </div>
+          <div class="video-box">
+            <img id="dashboard-video" alt="Live camera image" class="hidden">
+            <div class="video-placeholder" id="dashboard-placeholder">
+              <span class="camera-symbol">◉</span>
+              <strong>Camera is not running</strong>
+              <span>Click “Start Scan” to turn on the camera</span>
+            </div>
+          </div>
+          <div class="video-actions">
+            <span id="live-caption">Ready to start</span>
+            <button class="button outline" data-go="live">View Camera <span>→</span></button>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="view" id="view-live">
+      <div class="welcome-row">
+        <div><h2>Live Camera</h2><p>Start or stop scanning from the camera.</p></div>
+        <div class="button-row">
+          <button class="button primary" id="live-start">▶ Start Scan</button>
+          <button class="button danger hidden" id="live-stop">■ Stop</button>
+        </div>
+      </div>
+      <div class="metrics live-metrics">
+        <article class="metric-card"><div class="metric-top"><span>People in Current Frame</span><span class="metric-icon blue">♙</span></div><strong id="metric-total">0</strong><small>Detections</small></article>
+        <article class="metric-card"><div class="metric-top"><span>Helmet</span><span class="metric-icon green">✓</span></div><strong id="metric-helmet">0</strong><small id="metric-helmet-percent">0.0% of detected people</small></article>
+        <article class="metric-card"><div class="metric-top"><span>No Helmet</span><span class="metric-icon red">!</span></div><strong id="metric-no-helmet">0</strong><small id="metric-no-helmet-percent">0.0% of detected people</small></article>
+        <article class="metric-card"><div class="metric-top"><span>Unknown</span><span class="metric-icon amber">?</span></div><strong id="metric-unknown">0</strong><small>Requires a helmet-trained model</small></article>
+      </div>
+      <article class="panel live-large">
+        <div class="panel-heading">
+          <div><h3>Camera Feed</h3><p>Detection results appear over the image</p></div>
+          <span class="live-badge" id="live-badge-large"><i></i> Offline</span>
+        </div>
+        <div class="video-box large">
+          <img id="live-video" alt="Live camera feed" class="hidden">
+          <div class="video-placeholder" id="live-placeholder">
+            <span class="camera-symbol">◉</span>
+            <strong>Camera is not running</strong>
+            <span>Click “Start Scan” to begin</span>
+          </div>
+        </div>
+      </article>
+      <div class="notice info">Detection runs every 10 seconds while the live camera preview remains active. Scan images, timestamps, status, and percentages are saved in the <code>violations</code> folder.</div>
+    </section>
+    <section class="view" id="view-history">
+      <div class="welcome-row">
+        <div><h2>Detections</h2><p>Review saved images, timestamps, and scan statistics.</p></div>
+        <a class="button primary link-button" href="/api/export">↓ Download CSV</a>
+      </div>
+      <article class="panel history-panel">
+        <div class="history-toolbar">
+          <div><h3>All Records</h3><p id="history-count">0 records</p></div>
+          <button class="button outline" id="refresh-history">↻ Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table class="history-table">
+            <thead>
+              <tr><th>Image</th><th>Time</th><th>Status</th><th>People</th><th>Helmet</th><th>No Helmet</th><th>Helmet %</th><th>No Helmet %</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="history-body"><tr><td colspan="9" class="empty-cell">Loading records…</td></tr></tbody>
+          </table>
+        </div>
+      </article>
+      <p class="storage-note">Images and CSV files are stored in the project’s <code>violations</code> folder.</p>
+    </section>
+    <section class="view" id="view-cameras">
+      <div class="welcome-row">
+        <div><h2>Cameras</h2><p>Information about the camera source currently in use.</p></div>
+        <button class="button primary" data-go="live">Open Live Camera →</button>
+      </div>
+      <article class="panel info-panel">
+        <div class="panel-heading">
+          <div><h3>Default Camera</h3><p>Camera source 0 on this computer</p></div>
+          <span class="live-badge" id="camera-page-badge"><i></i> Offline</span>
+        </div>
+        <p class="page-note">This app connects to one default camera. Adding and managing multiple cameras is not currently supported.</p>
+      </article>
+    </section>
+    <section class="view" id="view-videos">
+      <div class="welcome-row">
+        <div><h2>Videos</h2><p>Browse images saved from each scan.</p></div>
+        <button class="button outline" data-go="history">View Detection Records →</button>
+      </div>
+      <div class="notice info">The system currently saves scan snapshots only. Video recording and video clips are not supported.</div>
+      <div class="video-gallery" id="video-gallery"><p class="empty-cell">Loading images…</p></div>
+    </section>
+    <section class="view" id="view-reports">
+      <div class="welcome-row">
+        <div><h2>Reports</h2><p>Summary of scan records saved in the CSV file.</p></div>
+        <div class="button-row report-actions">
+          <label class="date-field"><span>From</span><input type="date" id="report-start-date" aria-label="Report start date"></label>
+          <label class="date-field"><span>To</span><input type="date" id="report-end-date" aria-label="Report end date"></label>
+          <button class="button primary" id="generate-report" type="button">↓ Generate Report</button>
+        </div>
+      </div>
+      <div class="metrics report-metrics">
+        <article class="metric-card"><div class="metric-top"><span>Total Detections</span><span class="metric-icon blue">▤</span></div><strong id="report-total">0</strong><small>People detected</small></article>
+        <article class="metric-card"><div class="metric-top"><span>Helmet</span><span class="metric-icon green">✓</span><span class="metric-ratio" id="report-helmet-ratio">0.0%</span></div><strong id="report-helmet">0</strong><small>Compliant people</small></article>
+        <article class="metric-card"><div class="metric-top"><span>No Helmet</span><span class="metric-icon red">×</span><span class="metric-ratio no-helmet-ratio" id="report-no-helmet-ratio">0.0%</span></div><strong id="report-no-helmet">0</strong><small>Non-compliant people</small></article>
+        <article class="metric-card"><div class="metric-top"><span>Violations</span><span class="metric-icon violet">!</span></div><strong id="report-violations">0</strong><small>Flagged for review</small></article>
+      </div>
+      <div class="report-chart-grid">
+        <article class="panel chart-panel">
+          <div class="panel-heading">
+            <div><h3>Detection Trend</h3><p>Daily detection frequency for the selected date range</p></div>
+            <div class="chart-legend"><span><i class="legend-helmet"></i> Helmet</span><span><i class="legend-no-helmet"></i> No Helmet</span></div>
+          </div>
+          <svg id="report-trend-chart" class="overview-chart report-trend-chart" viewBox="0 0 560 230" role="img" aria-label="Helmet and no-helmet detection trend"></svg>
+        </article>
+        <article class="panel ratio-panel">
+          <div class="panel-heading"><div><h3>Helmet Ratio</h3><p>Compliance breakdown</p></div></div>
+          <div class="ratio-chart" id="report-ratio-chart" role="img" aria-label="Helmet and no-helmet ratio">
+            <div class="ratio-chart-center"><strong id="report-compliance-ratio">0.0%</strong><span>COMPLIANCE</span></div>
+          </div>
+          <div class="ratio-legend">
+            <div><span><i class="legend-helmet"></i> Helmet</span><strong id="report-ratio-helmet-count">0</strong></div>
+            <div><span><i class="legend-no-helmet"></i> No Helmet</span><strong id="report-ratio-no-helmet-count">0</strong></div>
+          </div>
+        </article>
+      </div>
+      <p class="page-note report-note">Reports are calculated from people counted in saved scan images. Violations count people detected without a helmet.</p>
+    </section>
+    <section class="view" id="view-users">
+      <div class="welcome-row"><div><h2>Users</h2><p>User information for this application.</p></div></div>
+      <article class="panel info-panel">
+        <div class="profile-card"><span class="avatar">A</span><div><h3>Local User</h3><p class="page-note">Using the dashboard on this computer</p></div></div>
+        <div class="notice info">This application currently runs as a local single-user system. Sign-in and multi-user management are not available.</div>
+      </article>
+    </section>
+    <section class="view" id="view-settings">
+      <div class="welcome-row"><div><h2>Settings</h2><p>Current scan configuration.</p></div></div>
+      <article class="panel info-panel">
+        <div class="settings-list">
+          <div><span>Scan Interval</span><strong id="settings-interval">10 seconds</strong></div>
+          <div><span>Camera Source</span><strong>Default Camera (0)</strong></div>
+          <div><span>Storage Location</span><strong><code>violations</code></strong></div>
+          <div><span>Storage Format</span><strong>Images and CSV</strong></div>
+        </div>
+        <p class="page-note">These are the current values. Editing settings from the dashboard is not currently supported.</p>
+      </article>
+    </section>
+    <section class="view" id="view-detail">
+      <div class="welcome-row detail-heading">
+        <div>
+          <button class="text-button back-button" id="detail-back">← Back to Detections</button>
+          <h2>Detection Details</h2>
+          <p>Saved information and image for this record.</p>
+        </div>
+        <span class="event-id" id="detail-event-id"></span>
+      </div>
+      <div class="detail-grid">
+        <article class="panel detail-image-panel">
+          <div class="detail-image-heading">
+            <div><h3>Scan Image</h3><p>Image with detection markers</p></div>
+            <span id="detail-image-status"></span>
+          </div>
+          <a id="detail-image-link" class="detail-image-link" target="_blank" rel="noopener">
+            <img id="detail-image" alt="Saved scan image">
+          </a>
+        </article>
+        <div class="detail-side">
+          <article class="panel telemetry-panel">
+            <div class="panel-heading">
+              <div><h3>Scan Information</h3><p>Record data</p></div>
+            </div>
+            <dl class="telemetry-list">
+              <div><dt>Status</dt><dd id="detail-status"></dd></div>
+              <div><dt>Person Detection Confidence</dt><dd id="detail-confidence">No data</dd></div>
+              <div><dt>Camera</dt><dd>Default Camera (0)</dd></div>
+              <div><dt>Time</dt><dd id="detail-time"></dd></div>
+              <div><dt>Image Name</dt><dd class="detail-path" id="detail-path"></dd></div>
+            </dl>
+            <a class="button primary detail-download" id="detail-download" download>↓ Download Image</a>
+          </article>
+          <article class="panel detail-counts-panel">
+            <div class="detail-counts-heading"><h3>Detections in Frame</h3></div>
+            <div class="detail-counts">
+              <div class="detail-count helmet-count"><span>Helmet</span><strong id="detail-helmet-count">0</strong></div>
+              <div class="detail-count no-helmet-count"><span>No Helmet</span><strong id="detail-no-helmet-count">0</strong></div>
+              <div class="detail-count unknown-count"><span>Unknown</span><strong id="detail-unknown-count">0</strong></div>
+            </div>
+            <p class="detail-note">No continuous video is available because the application saves scan snapshots only.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+    <footer>Safety Helmet Detection System <span>·</span> Stored on this computer</footer>
+  </main>
+  <div class="image-modal hidden" id="image-modal" role="dialog" aria-modal="true" aria-label="Record image">
+    <button class="modal-close" id="modal-close" aria-label="Close">×</button>
+    <img id="modal-image" alt="Saved image">
+  </div>
+  <aside class="scan-popup hidden" id="scan-popup" role="status" aria-live="polite">
+    <button class="scan-popup-close" id="scan-popup-close" type="button" aria-label="Close">×</button>
+    <img class="scan-popup-image hidden" id="scan-popup-image" alt="">
+    <span class="scan-popup-unknown hidden" id="scan-popup-unknown">?</span>
+    <div class="scan-popup-copy">
+      <span class="scan-popup-kicker">New Scan Result</span>
+      <strong id="scan-popup-title"></strong>
+      <span id="scan-popup-counts"></span>
+    </div>
+  </aside>
+  <aside class="air-pointer-panel hidden" id="air-pointer-panel" aria-label="Point control camera">
+    <div class="air-pointer-panel-heading">
+      <strong>Point Control</strong>
+      <button class="air-pointer-stop" id="air-pointer-stop" type="button">Turn off</button>
+    </div>
+    <video id="air-pointer-video" autoplay playsinline muted></video>
+    <p id="air-pointer-status" role="status" aria-live="polite">Starting camera…</p>
+    <small>Camera video is processed locally and is not uploaded.</small>
+  </aside>
+  <div class="air-pointer-cursor hidden" id="air-pointer-cursor" aria-hidden="true">
+    <span class="air-pointer-ring"></span>
+    <span class="air-pointer-center"></span>
+  </div>
+  <script src="{{ url_for('static', filename='dashboard.js', v=13) }}"></script>
+  <script type="module" src="{{ url_for('static', filename='air_pointer.js', v=2) }}"></script>
+</body>
+</html>

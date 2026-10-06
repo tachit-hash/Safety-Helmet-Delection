@@ -1,0 +1,7 @@
+{
+  "name": "safety-helmet-detection",
+  "private": true,
+  "dependencies": {
+    "@mediapipe/tasks-vision": "1.0.1"
+  }
+}

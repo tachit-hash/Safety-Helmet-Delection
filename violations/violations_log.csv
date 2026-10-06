@@ -1,0 +1,17 @@
+﻿Timestamp,Image_Path,Status,Total_People,Helmet_Count,No_Helmet_Count,Unknown_Count,Helmet_Percent,No_Helmet_Percent,Confidence
+2026-10-05 15:05:38,C:\Users\User\Desktop\safety-helmet-detection\violations\20261005_150538_845837.jpg,NO HELMET,2,0,2,0,0.0,100.0,0.8663
+2026-10-05 16:38:57,C:\Users\User\Desktop\safety-helmet-detection\violations\20261005_163857_426124.jpg,NO HELMET,1,0,1,0,0.0,100.0,0.8383
+2026-10-05 16:43:24,C:\Users\User\Desktop\safety-helmet-detection\violations\20261005_164324_094329.jpg,NO HELMET,2,0,2,0,0.0,100.0,0.8483
+2026-10-06 10:18:46,C:\Users\User\Desktop\safety-helmet-detection\violations\20261006_101846_741521.jpg,HELMET,1,1,0,0,100.0,0.0,0.9207
+2026-10-06 10:29:53,C:\Users\User\Desktop\safety-helmet-detection\violations\20261006_102953_039086.jpg,NO HELMET,1,0,1,0,0.0,100.0,0.9036
+2026-10-06 10:54:14,C:\Users\User\Desktop\safety-helmet-detection\violations\20261006_105414_786167.jpg,NO HELMET,1,0,1,0,0.0,100.0,0.9169
+2026-10-06 10:54:24,C:\Users\User\Desktop\safety-helmet-detection\violations\20261006_105424_818803.jpg,HELMET,1,1,0,0,100.0,0.0,0.6898
+2026-10-06 10:54:34,C:\Users\User\Desktop\safety-helmet-detection\violations\20261006_105434_815315.jpg,NO HELMET,2,1,1,0,50.0,50.0,0.7402
+2026-10-06 13:34:07,C:\Users\User\Desktop\safety-helmet-detection\violations\20261006_133407_698836.jpg,HELMET,2,2,0,0,100.0,0.0,0.9473
+2026-10-06 13:34:07,C:\Users\User\Desktop\safety-helmet-detection\violations\20261006_133407_710404.jpg,HELMET,2,2,0,0,100.0,0.0,0.9170
+2026-10-06 13:34:33,C:\Users\User\Desktop\safety-helmet-detection\violations\20261006_133433_350882.jpg,HELMET,1,1,0,0,100.0,0.0,0.9117
+2026-10-06 13:34:43,C:\Users\User\Desktop\safety-helmet-detection\violations\20261006_133443_346457.jpg,NO HELMET,1,0,1,0,0.0,100.0,0.9137
+2026-10-06 13:34:53,C:\Users\User\Desktop\safety-helmet-detection\violations\20261006_133453_399754.jpg,HELMET,2,2,0,0,100.0,0.0,0.9326
+2026-10-06 13:35:23,C:\Users\User\Desktop\safety-helmet-detection\violations\20261006_133523_391262.jpg,HELMET,1,1,0,0,100.0,0.0,0.8938
+2026-10-06 13:35:33,C:\Users\User\Desktop\safety-helmet-detection\violations\20261006_133533_352112.jpg,NO HELMET,1,0,1,0,0.0,100.0,0.9337
+2026-10-06 13:36:13,C:\Users\User\Desktop\safety-helmet-detection\violations\20261006_133613_443278.jpg,NO HELMET,1,0,1,0,0.0,100.0,0.8975
